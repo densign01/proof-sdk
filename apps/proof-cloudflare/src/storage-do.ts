@@ -281,7 +281,7 @@ export class DODocumentStorage implements DocumentStorage {
     const ts = this.now();
     this.sql.exec(
       `UPDATE documents
-       SET marks = ?, updated_at = ?
+       SET marks = ?, updated_at = ?, revision = revision + 1
        WHERE slug = ? AND share_state IN ('ACTIVE', 'PAUSED')`,
       JSON.stringify(marks),
       ts,
