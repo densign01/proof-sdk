@@ -6,7 +6,8 @@
  */
 
 import { $markSchema, $markAttr } from '@milkdown/kit/utils';
-import type { Attrs } from '@milkdown/kit/prose/model';
+import type { Attrs, Mark } from '@milkdown/kit/prose/model';
+import type { JSONRecord, MarkdownNode, SerializerState } from '@milkdown/transformer';
 
 type ProofSuggestionKind = 'insert' | 'delete' | 'replace';
 
@@ -14,7 +15,7 @@ type ProofNode = {
   type?: string;
   proof?: string;
   attrs?: Record<string, string | null | undefined>;
-  children?: unknown[];
+  children?: MarkdownNode[];
 };
 
 function normalizeSuggestionKind(kind: string | null | undefined): ProofSuggestionKind {
@@ -43,13 +44,21 @@ function buildCommonDomAttrs(mark: { attrs: { id?: string | null; by?: string | 
   return attrs;
 }
 
+function toProofMarkAttrs(attrs: Record<string, string | null | undefined>): JSONRecord {
+  const normalized: JSONRecord = {};
+  for (const [key, value] of Object.entries(attrs)) {
+    normalized[key] = value ?? null;
+  }
+  return normalized;
+}
+
 function serializeProofMark(
-  state: { withMark: (mark: unknown, type: string, value?: string, props?: Record<string, unknown>) => void },
-  mark: { attrs: Record<string, string | null | undefined> },
+  state: Pick<SerializerState, 'withMark'>,
+  mark: Mark,
   proof: string,
   attrs: Record<string, string | null | undefined>
 ): void {
-  state.withMark(mark, 'proofMark', undefined, { proof, attrs });
+  state.withMark(mark, 'proofMark', undefined, { proof, attrs: toProofMarkAttrs(attrs) });
 }
 
 // Suggestion mark

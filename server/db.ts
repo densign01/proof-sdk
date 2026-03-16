@@ -204,6 +204,7 @@ export interface DocumentRow {
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
+  mutation_ready?: boolean;
 }
 
 export interface DocumentProjectionRow {

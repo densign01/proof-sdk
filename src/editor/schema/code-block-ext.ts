@@ -245,6 +245,7 @@ export const codeBlockSchemaExt = $nodeSchema('code_block', (ctx) => {
         // Extract proof marks from the code block
         const proofMarks = extractProofMarks(node);
         const encodedMarks = encodeMarksForMeta(proofMarks);
+        const markdownProps: Record<string, string> = {};
 
         // Build meta: language first, then proof marks if any
         let meta = node.attrs.language || '';
@@ -252,10 +253,14 @@ export const codeBlockSchemaExt = $nodeSchema('code_block', (ctx) => {
           meta = meta ? `${meta} ${encodedMarks}` : encodedMarks;
         }
 
-        state.addNode('code', undefined, node.textContent, {
-          lang: node.attrs.language || undefined,
-          meta: encodedMarks || undefined,
-        });
+        if (node.attrs.language) {
+          markdownProps.lang = node.attrs.language;
+        }
+        if (encodedMarks) {
+          markdownProps.meta = encodedMarks;
+        }
+
+        state.addNode('code', undefined, node.textContent, markdownProps);
       },
     },
   };

@@ -33,6 +33,10 @@ type HeadlessMilkdown = HeadlessMilkdownParser & {
   serializeSingleNode: (node: ProseMirrorNode) => string;
 };
 
+const proofMarkStringifyHandlers = {
+  proofMark: proofMarkHandler,
+} as unknown as NonNullable<Parameters<typeof remarkStringify>[0]>['handlers'];
+
 let enginePromise: Promise<HeadlessMilkdown> | null = null;
 
 const INLINE_HTML_TAG_PATTERN = /<\/?[A-Za-z][A-Za-z0-9-]*(?:\s+[^>\n]*)?\s*\/?>/g;
@@ -104,9 +108,7 @@ function createSerializer(schema: Schema): (doc: ProseMirrorNode) => string {
     .use(remarkGfm)
     .use(remarkFrontmatter, ['yaml'])
     .use(remarkStringify, {
-      handlers: {
-        proofMark: proofMarkHandler,
-      },
+      handlers: proofMarkStringifyHandlers,
     });
 
   return SerializerState.create(schema as any, processor as any) as unknown as (doc: ProseMirrorNode) => string;
