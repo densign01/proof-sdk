@@ -833,30 +833,27 @@ export class DocumentSession extends DurableObject<Env> {
   ): Promise<Response> {
     const body = await request.json().catch(() => ({})) as Record<string, unknown>;
     const opType = typeof body.type === "string" ? body.type : "";
-    const payload = typeof body.payload === "object" && body.payload !== null
-      ? body.payload as Record<string, unknown>
-      : body;
 
     // Route to appropriate handler based on op type
     switch (opType) {
       case "comment.add":
-        return this.handleMarksRoute(request, slug, "comment");
+        return this.handleMarksRoute(request, slug, "comment", body);
       case "suggest.replace":
-        return this.handleMarksRoute(request, slug, "suggest-replace");
+        return this.handleMarksRoute(request, slug, "suggest-replace", body);
       case "suggest.insert":
-        return this.handleMarksRoute(request, slug, "suggest-insert");
+        return this.handleMarksRoute(request, slug, "suggest-insert", body);
       case "suggest.delete":
-        return this.handleMarksRoute(request, slug, "suggest-delete");
+        return this.handleMarksRoute(request, slug, "suggest-delete", body);
       case "suggest.accept":
-        return this.handleMarksRoute(request, slug, "accept");
+        return this.handleMarksRoute(request, slug, "accept", body);
       case "suggest.reject":
-        return this.handleMarksRoute(request, slug, "reject");
+        return this.handleMarksRoute(request, slug, "reject", body);
       case "comment.reply":
-        return this.handleMarksRoute(request, slug, "reply");
+        return this.handleMarksRoute(request, slug, "reply", body);
       case "comment.resolve":
-        return this.handleMarksRoute(request, slug, "resolve");
+        return this.handleMarksRoute(request, slug, "resolve", body);
       case "comment.unresolve":
-        return this.handleMarksRoute(request, slug, "unresolve");
+        return this.handleMarksRoute(request, slug, "unresolve", body);
       case "rewrite":
         return this.handleAgentRewrite(request, slug);
       default:
@@ -1174,9 +1171,10 @@ export class DocumentSession extends DurableObject<Env> {
     request: Request,
     slug: string,
     markAction: string,
+    preParsedBody?: Record<string, unknown>,
   ): Promise<Response> {
     const doc = this.ensureDoc();
-    const body = await request.json().catch(() => ({})) as Record<string, unknown>;
+    const body = preParsedBody ?? await request.json().catch(() => ({})) as Record<string, unknown>;
     const agentId = getAgentId(request);
 
     // Idempotency check

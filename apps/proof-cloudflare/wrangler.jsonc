@@ -26,7 +26,7 @@
     {
       "binding": "CATALOG_DB",
       "database_name": "proof-catalog",
-      "database_id": "846224ed-030d-4013-b09c-d23ba85555f0",
+      "database_id": "a46975d6-6b0e-4a03-bab8-be9b9df71140",
       "migrations_dir": "d1/migrations"
     }
   ],
